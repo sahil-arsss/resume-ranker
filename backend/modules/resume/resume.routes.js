@@ -15,5 +15,11 @@ router.post(
   protect,
   resumeController.extractResumeText
 );
+router.post(
+  "/:id/extract-skills",
+  protect,
+  resumeController.extractResumeSkills
+);
+
 
 module.exports = router;

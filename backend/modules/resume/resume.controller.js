@@ -33,5 +33,19 @@ const extractResumeText = async (req, res, next) => {
     next(err);
   }
 };
+const extractResumeSkills = async (req, res, next) => {
+  try {
+    const resume = await resumeService.extractResumeSkills(
+      req.params.id
+    );
 
-module.exports = { uploadResume,extractResumeText };
+    res.json({
+      success: true,
+      skills: resume.skills
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { uploadResume,extractResumeText,extractResumeSkills };
