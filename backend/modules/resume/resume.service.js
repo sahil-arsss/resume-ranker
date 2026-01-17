@@ -66,4 +66,29 @@ const scoreResumeForJob = async (resumeId, jobId) => {
   return resume;
 };
 
-module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills ,scoreResumeForJob};
+
+const rankResumesForJob = async (jobId) => {
+  const job = await Job.findById(jobId);
+  if (!job) throw new Error("Job not found");
+
+  const resumes = await Resume.find({
+    skills: { $exists: true, $ne: [] }
+  });
+
+  const ranked = resumes.map(resume => {
+    const result = scoreResume(
+      resume.skills,
+      job.requiredSkills
+    );
+
+    return {
+      resumeId: resume._id,
+      score: result.score,
+      matchedSkills: result.matchedSkills
+    };
+  });  
+
+  return ranked.sort((a, b) => b.score - a.score);
+};
+
+module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills ,scoreResumeForJob,rankResumesForJob};

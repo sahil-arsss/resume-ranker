@@ -24,5 +24,9 @@ router.post(
   "/:resumeId/score/:jobId",
   resumeController.scoreResume
 );
-
+router.get(
+  "/rank/job/:jobId",
+  protect,
+  resumeController.rankResumes
+);
 module.exports = router;

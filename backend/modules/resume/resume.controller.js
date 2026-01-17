@@ -64,5 +64,19 @@ const scoreResume = async (req, res, next) => {
     next(err);
   }
 };
+const rankResumes = async (req, res, next) => {
+  try {
+    const ranked = await resumeService.rankResumesForJob(
+      req.params.jobId
+    );
 
-module.exports = { uploadResume,extractResumeText,extractResumeSkills,scoreResume };
+    res.json({
+      success: true,
+      rankedCandidates: ranked
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { uploadResume,extractResumeText,extractResumeSkills,scoreResume,rankResumes };
