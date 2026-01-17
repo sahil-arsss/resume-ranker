@@ -3,15 +3,21 @@ const { extractTextFromResume } = require("./resume.parser");
 const { extractSkillsFromText } = require("./skill.extractor");
 const Job = require("../job/job.model");
 const { scoreResume } = require("./resume.scorer");
+const { sendEmail } = require("../../utils/email/email.service");
+const {
+  shortlistedTemplate,
+  rejectedTemplate
+} = require("../../utils/email/email.templates");
 
-const saveResumeMetadata = async (file, userId) => {
+
+const saveResumeMetadata = async (file, userId,candidateEmail) => {
   const resume = await Resume.create({
     originalName: file.originalname,
     filePath: file.path,
     fileType: file.mimetype,
-    uploadedBy: userId
+    uploadedBy: userId,
+    candidateEmail, 
   });
-
   return resume;
 };
 const processResumeText = async (resumeId) => {
@@ -91,4 +97,33 @@ const rankResumesForJob = async (jobId) => {
   return ranked.sort((a, b) => b.score - a.score);
 };
 
-module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills ,scoreResumeForJob,rankResumesForJob};
+
+const notifyCandidate = async (resumeId) => {
+  const resume = await Resume.findById(resumeId);
+  if (!resume) throw new Error("Resume not found");
+
+  if (!resume.candidateEmail)
+    throw new Error("Candidate email missing");
+
+  let subject, html;
+
+  if (resume.score >= 70) {
+    subject = "You have been shortlisted!";
+    html = shortlistedTemplate("Candidate", resume.score);
+  } else {
+    subject = "Application Update";
+    html = rejectedTemplate("Candidate"); 
+  }
+
+  await sendEmail({
+    to: resume.candidateEmail,
+    subject,
+    html
+  });
+
+  resume.emailStatus = "SENT";
+  await resume.save();
+
+  return resume;
+};
+module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills ,scoreResumeForJob,rankResumesForJob,notifyCandidate};

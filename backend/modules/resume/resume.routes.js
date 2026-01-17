@@ -29,4 +29,10 @@ router.get(
   protect,
   resumeController.rankResumes
 );
+router.post(
+  "/:id/notify",
+  protect,
+  resumeController.notifyCandidate
+);
+
 module.exports = router;

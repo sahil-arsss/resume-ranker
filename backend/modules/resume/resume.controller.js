@@ -5,10 +5,14 @@ const uploadResume = async (req, res, next) => {
     if (!req.file) {
       return res.status(400).json({ message: "File is required" });
     }
-
+     const { candidateEmail } = req.body;
+    if (!candidateEmail) {
+        return res.status(400).json({ message: "Candidate email is required" });
+      }
     const resume = await resumeService.saveResumeMetadata(
       req.file,
-      req.user.id
+      req.user.id,
+      candidateEmail
     );
 
     res.status(201).json({
@@ -78,5 +82,17 @@ const rankResumes = async (req, res, next) => {
     next(err);
   }
 };
+const notifyCandidate = async (req, res, next) => {
+  try {
+    await resumeService.notifyCandidate(req.params.id);
 
-module.exports = { uploadResume,extractResumeText,extractResumeSkills,scoreResume,rankResumes };
+    res.json({
+      success: true,
+      message: "Email sent successfully"
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { uploadResume,extractResumeText,extractResumeSkills,scoreResume,rankResumes,notifyCandidate };

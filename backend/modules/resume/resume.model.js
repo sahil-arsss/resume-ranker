@@ -28,6 +28,12 @@ const resumeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Job",
     },
+    candidateEmail: String,
+    emailStatus: {
+      type: String,
+      enum: ["PENDING", "SENT"],
+      default: "PENDING",
+    },
     status: {
       type: String,
       enum: ["UPLOADED", "TEXT_EXTRACTED", "SKILLS_EXTRACTED", "PROCESSED"],
