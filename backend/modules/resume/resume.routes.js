@@ -3,6 +3,7 @@ const router = express.Router();
 const protect = require("../../middlewares/auth.middleware");
 const upload = require("../../utils/fileUpload");
 const resumeController = require("./resume.controller");
+const allowRoles = require("../../middlewares/role.middleware");
 
 router.post(
   "/upload",
@@ -34,5 +35,10 @@ router.post(
   protect,
   resumeController.notifyCandidate
 );
-
+router.get(
+  "/stats",
+  protect,
+  allowRoles("ADMIN"),
+  resumeController.getResumeStats
+);
 module.exports = router;

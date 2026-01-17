@@ -126,4 +126,25 @@ const notifyCandidate = async (resumeId) => {
 
   return resume;
 };
-module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills ,scoreResumeForJob,rankResumesForJob,notifyCandidate};
+
+const getResumeStats = async () => {
+  const total = await Resume.countDocuments();
+  const processed = await Resume.countDocuments({
+    status: "PROCESSED"
+  });
+  const shortlisted = await Resume.countDocuments({
+    score: { $gte: 70 }
+  });
+  const rejected = await Resume.countDocuments({
+    score: { $lt: 70 }
+  });
+
+  return {
+    total,
+    processed,
+    shortlisted,
+    rejected
+  };
+};
+
+module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills ,scoreResumeForJob,rankResumesForJob,notifyCandidate,getResumeStats};

@@ -19,10 +19,32 @@ const createJobFromDescription = async (data, userId) => {
     createdBy: userId
   });
 };
+const getJobStats = async () => {
+  return Job.aggregate([
+    {
+      $lookup: {
+        from: "resumes",
+        localField: "_id",
+        foreignField: "jobApplied",
+        as: "applications"
+      }
+    },
+    {
+      $project: {
+        title: 1,
+        applicantsCount: { $size: "$applications" }
+      }
+    },
+    {
+      $sort: { applicantsCount: -1 }
+    }
+  ]);
+};
 
 module.exports = {
   createJob,
-  createJobFromDescription
+  createJobFromDescription,
+  getJobStats
 };
 
 

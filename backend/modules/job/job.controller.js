@@ -23,5 +23,13 @@ const createJobFromDescription = async (req, res, next) => {
     next(err);
   }
 };
+const getJobStats = async (req, res, next) => {
+  try {
+    const stats = await jobService.getJobStats();
+    res.json({ success: true, stats });
+  } catch (err) {
+    next(err);
+  }
+};
 
-module.exports = { createJob,createJobFromDescription };
+module.exports = { createJob,createJobFromDescription,getJobStats };

@@ -94,5 +94,13 @@ const notifyCandidate = async (req, res, next) => {
     next(err);
   }
 };
+const getResumeStats = async (req, res, next) => {
+  try {
+    const stats = await resumeService.getResumeStats();
+    res.json({ success: true, stats });
+  } catch (err) {
+    next(err);
+  }
+};
 
-module.exports = { uploadResume,extractResumeText,extractResumeSkills,scoreResume,rankResumes,notifyCandidate };
+module.exports = { uploadResume,extractResumeText,extractResumeSkills,scoreResume,rankResumes,notifyCandidate,getResumeStats };
