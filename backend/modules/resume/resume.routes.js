@@ -20,6 +20,9 @@ router.post(
   protect,
   resumeController.extractResumeSkills
 );
-
+router.post(
+  "/:resumeId/score/:jobId",
+  resumeController.scoreResume
+);
 
 module.exports = router;

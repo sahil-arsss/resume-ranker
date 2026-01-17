@@ -20,6 +20,7 @@ const uploadResume = async (req, res, next) => {
   }
 };
 const extractResumeText = async (req, res, next) => {
+ 
   try {
     const resume = await resumeService.processResumeText(
       req.params.id
@@ -47,5 +48,21 @@ const extractResumeSkills = async (req, res, next) => {
     next(err);
   }
 };
+const scoreResume = async (req, res, next) => {
+  try {
+    const resume = await resumeService.scoreResumeForJob(
+      req.params.resumeId,
+      req.params.jobId
+    );
 
-module.exports = { uploadResume,extractResumeText,extractResumeSkills };
+    res.json({
+      success: true,
+      score: resume.score,
+      matchedSkills: resume.matchedSkills
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { uploadResume,extractResumeText,extractResumeSkills,scoreResume };

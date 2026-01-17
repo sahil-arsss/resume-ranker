@@ -1,6 +1,8 @@
 const Resume = require("./resume.model");
 const { extractTextFromResume } = require("./resume.parser");
 const { extractSkillsFromText } = require("./skill.extractor");
+const Job = require("../job/job.model");
+const { scoreResume } = require("./resume.scorer");
 
 const saveResumeMetadata = async (file, userId) => {
   const resume = await Resume.create({
@@ -43,4 +45,25 @@ const extractResumeSkills = async (resumeId) => {
   return resume;
 };
 
-module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills };
+const scoreResumeForJob = async (resumeId, jobId) => {
+  const resume = await Resume.findById(resumeId);
+  if (!resume) throw new Error("Resume not found");
+
+  if (!resume.skills || resume.skills.length === 0)
+    throw new Error("Skills not extracted");
+
+  const job = await Job.findById(jobId);
+  if (!job) throw new Error("Job not found");
+
+  const result = scoreResume(resume.skills, job.requiredSkills);
+
+  resume.score = result.score;
+  resume.matchedSkills = result.matchedSkills;
+  resume.jobApplied = jobId;
+  resume.status = "PROCESSED";
+
+  await resume.save();
+  return resume;
+};
+
+module.exports = { saveResumeMetadata,processResumeText,extractResumeSkills ,scoreResumeForJob};
